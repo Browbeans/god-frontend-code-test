@@ -1,4 +1,10 @@
 body {
-  background: steelblue;
-  color: white;
+    background: steelblue;
+    color: white;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.carContainer {
+    width: 23%;
 }
