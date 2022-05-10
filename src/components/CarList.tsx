@@ -1,5 +1,14 @@
 import React, { FC, useEffect, useState } from "react";
-import { Card, Flex, Link, Spacer, TabNav, TabNavItem, Text } from "vcc-ui";
+import {
+    Card,
+    Flex,
+    Icon,
+    Link,
+    Spacer,
+    TabNav,
+    TabNavItem,
+    Text,
+} from "vcc-ui";
 import { getAllCars } from "./api/carApi";
 import { CarBodyTypeEnum, CarModel } from "./types/types";
 
@@ -8,23 +17,28 @@ const PAGE_SIZE = 4;
 
 export const CarList: FC = () => {
     const [allCars, setAllCars] = useState<CarModel[]>([]);
+    const [filteredCars, setFilteredCars] = useState<CarModel[]>([]);
     const [carBodyType, setCarBodyType] = useState<CarBodyTypeEnum>(
         CarBodyTypeEnum.ALL
     );
     const [currentPage, setCurrentPage] = useState(STARTING_PAGE);
+    const [lastPage, setLastPage] = useState<number>(0);
 
     const getCars = async () => {
-        console.log(carBodyType);
-
         const cars = await getAllCars();
+        setLastPage(cars.length / PAGE_SIZE);
         const filteredCars = cars.filter((car) => car.bodyType === carBodyType);
-        if (carBodyType === CarBodyTypeEnum.ALL) setAllCars(cars);
+        if (carBodyType === CarBodyTypeEnum.ALL) {
+            setFilteredCars(cars);
+            setAllCars(cars);
+        }
         if (carBodyType !== CarBodyTypeEnum.ALL) {
+            setFilteredCars(filteredCars);
             setAllCars(filteredCars);
             return;
         }
         if (cars.length > PAGE_SIZE) {
-            setAllCars(
+            setFilteredCars(
                 cars.slice(
                     (currentPage - 1) * PAGE_SIZE,
                     currentPage * PAGE_SIZE
@@ -38,7 +52,7 @@ export const CarList: FC = () => {
     }, [carBodyType, currentPage]);
 
     return (
-        <>
+        <div className="carSection">
             <TabNav>
                 <TabNavItem onClick={() => setCarBodyType(CarBodyTypeEnum.ALL)}>
                     All
@@ -60,12 +74,11 @@ export const CarList: FC = () => {
             <Flex
                 extend={{
                     flexDirection: "row",
-                    background: "white",
                     padding: "1rem",
                     boxSizing: "border-box",
                 }}
             >
-                {allCars?.map((car) => (
+                {filteredCars?.map((car) => (
                     <div className="carContainer" key={car.id}>
                         <Card>
                             <Text variant={"bates"}>{car.bodyType}</Text>
@@ -107,6 +120,38 @@ export const CarList: FC = () => {
                     </div>
                 ))}
             </Flex>
-        </>
+            {allCars.length > PAGE_SIZE && (
+                <div className="paginatorContainer">
+                    <button
+                        onClick={() => setCurrentPage(currentPage - 1)}
+                        disabled={currentPage === STARTING_PAGE}
+                        className={"iconButton"}
+                    >
+                        <Icon
+                            color={
+                                currentPage === STARTING_PAGE
+                                    ? "secondary"
+                                    : "primary"
+                            }
+                            type="media-previous-48"
+                        />
+                    </button>
+                    <button
+                        onClick={() => setCurrentPage(currentPage + 1)}
+                        disabled={currentPage === lastPage}
+                        className={"iconButton"}
+                    >
+                        <Icon
+                            color={
+                                currentPage === lastPage
+                                    ? "secondary"
+                                    : "primary"
+                            }
+                            type={"media-next-48"}
+                        />
+                    </button>
+                </div>
+            )}
+        </div>
     );
 };

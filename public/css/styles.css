@@ -1,8 +1,36 @@
 body {
-    background: steelblue;
+    background: white;
     color: white;
     box-sizing: border-box;
     margin: 0;
+}
+
+/* .carSection {
+} */
+
+.iconButton {
+    border: none;
+    padding: 0;
+    background: transparent;
+}
+
+.iconButton:disabled {
+    cursor: not-allowed;
+}
+
+.disabledButton {
+    border: none;
+    padding: 0;
+    cursor: not-allowed;
+    background: transparent;
+}
+
+.paginatorContainer {
+    width: 100%;
+    display: flex;
+    justify-content: right;
+    padding: 1rem;
+    box-sizing: border-box;
 }
 
 .carContainer {
