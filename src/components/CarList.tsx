@@ -60,8 +60,6 @@ export const CarList: FC = () => {
             <Flex
                 extend={{
                     flexDirection: "row",
-                    width: "100%",
-                    justifyContent: "space-between",
                     background: "white",
                     padding: "1rem",
                     boxSizing: "border-box",
