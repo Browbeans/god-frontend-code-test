@@ -1,7 +1,7 @@
 import { HelloWorld } from "../src/components/HelloWorld";
 import "../public/css/styles.css";
 import React from "react";
-import { CarList } from "../src/components/CarList";
+import { CarList } from "../src/components/Pages/CarList";
 import { StyleProvider, ThemePicker } from "vcc-ui";
 
 function HomePage() {

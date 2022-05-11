@@ -1,6 +1,7 @@
 import React, { FC, useEffect, useState } from "react";
 import {
     Card,
+    CardContent,
     Flex,
     Icon,
     Link,
@@ -9,15 +10,16 @@ import {
     TabNavItem,
     Text,
 } from "vcc-ui";
-import { getAllCars } from "./api/carApi";
-import { CarBodyTypeEnum, CarModel } from "./types/types";
+import { getAllCars } from "../api/carApi";
+import { CarBodyTypeEnum, CarModel } from "../types/types";
+import { CarListItem } from "./Components/CarListItem";
 
 const STARTING_PAGE = 1;
 const PAGE_SIZE = 4;
 
 export const CarList: FC = () => {
     const [allCars, setAllCars] = useState<CarModel[]>([]);
-    const [filteredCars, setFilteredCars] = useState<CarModel[]>([]);
+    const [isDesktopSize, setIsDesktopSize] = useState<boolean>();
     const [carBodyType, setCarBodyType] = useState<CarBodyTypeEnum>(
         CarBodyTypeEnum.ALL
     );
@@ -29,26 +31,23 @@ export const CarList: FC = () => {
         setLastPage(cars.length / PAGE_SIZE);
         const filteredCars = cars.filter((car) => car.bodyType === carBodyType);
         if (carBodyType === CarBodyTypeEnum.ALL) {
-            setFilteredCars(cars);
             setAllCars(cars);
         }
         if (carBodyType !== CarBodyTypeEnum.ALL) {
-            setFilteredCars(filteredCars);
             setAllCars(filteredCars);
             return;
-        }
-        if (cars.length > PAGE_SIZE) {
-            setFilteredCars(
-                cars.slice(
-                    (currentPage - 1) * PAGE_SIZE,
-                    currentPage * PAGE_SIZE
-                )
-            );
         }
     };
 
     useEffect(() => {
         getCars();
+        const handleResize = () => {
+            if (window && window.innerWidth > 1000) setIsDesktopSize(true);
+            if (window && window.innerWidth < 1000) setIsDesktopSize(false);
+        };
+        handleResize();
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
     }, [carBodyType, currentPage]);
 
     return (
@@ -76,51 +75,19 @@ export const CarList: FC = () => {
                     flexDirection: "row",
                     padding: "1rem",
                     boxSizing: "border-box",
+                    overflowX: "scroll",
                 }}
             >
-                {filteredCars?.map((car) => (
-                    <div className="carContainer" key={car.id}>
-                        <Card>
-                            <Text variant={"bates"}>{car.bodyType}</Text>
-                            <Flex
-                                extend={{
-                                    flexDirection: "row",
-                                    alignItems: "center",
-                                }}
-                            >
-                                <Text subStyle={"emphasis"} variant={"hillary"}>
-                                    {car.modelName}
-                                </Text>
-                                <Spacer />
-                                <Text
-                                    subStyle={"inline-link"}
-                                    variant={"bates"}
-                                >
-                                    {car.modelType}
-                                </Text>
-                            </Flex>
-                            <Spacer size={2} />
-                            <img src={car.imageUrl} alt={car.modelName} />
-                            <Spacer size={2} />
-                            <Flex
-                                extend={{
-                                    flexDirection: "row",
-                                    justifyContent: "center",
-                                }}
-                            >
-                                <Link href="#" arrow="right">
-                                    LEARN
-                                </Link>
-                                <Spacer size={2} />
-                                <Link href="#" arrow="right">
-                                    SHOP
-                                </Link>
-                            </Flex>
-                        </Card>
-                    </div>
-                ))}
+                {isDesktopSize
+                    ? allCars
+                          .slice(
+                              (currentPage - 1) * PAGE_SIZE,
+                              currentPage * PAGE_SIZE
+                          )
+                          .map((car) => <CarListItem car={car} />)
+                    : allCars.map((car) => <CarListItem car={car} />)}
             </Flex>
-            {allCars.length > PAGE_SIZE && (
+            {allCars.length > PAGE_SIZE && isDesktopSize && (
                 <div className="paginatorContainer">
                     <button
                         onClick={() => setCurrentPage(currentPage - 1)}
