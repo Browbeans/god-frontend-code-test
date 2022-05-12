@@ -17,7 +17,7 @@ interface CarListItemProps {
 }
 
 export const CarListItem: FC<CarListItemProps> = ({ car }) => (
-    <div className="carContainer" key={car.id}>
+    <div className="carContainer">
         <Text variant={"hillary"}>{car.bodyType}</Text>
         <Flex
             extend={{

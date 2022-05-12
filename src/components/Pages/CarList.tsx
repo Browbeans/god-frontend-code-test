@@ -102,8 +102,10 @@ export const CarList: FC = () => {
                               (currentPage - 1) * PAGE_SIZE,
                               currentPage * PAGE_SIZE
                           )
-                          .map((car) => <CarListItem car={car} />)
-                    : allCars.map((car) => <CarListItem car={car} />)}
+                          .map((car) => <CarListItem key={car.id} car={car} />)
+                    : allCars.map((car) => (
+                          <CarListItem key={car.id} car={car} />
+                      ))}
             </Flex>
             {allCars.length > PAGE_SIZE && isDesktopSize && (
                 <div className="paginatorContainer">
