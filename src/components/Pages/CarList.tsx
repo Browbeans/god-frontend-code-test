@@ -1,15 +1,5 @@
 import React, { FC, useEffect, useRef, useState } from "react";
-import {
-    Card,
-    CardContent,
-    Flex,
-    Icon,
-    Link,
-    Spacer,
-    TabNav,
-    TabNavItem,
-    Text,
-} from "vcc-ui";
+import { Flex, Icon, TabNav, TabNavItem } from "vcc-ui";
 import { getAllCars } from "../api/carApi";
 import { CarBodyTypeEnum, CarModel } from "../types/types";
 import { CarListItem } from "./Components/CarListItem";
