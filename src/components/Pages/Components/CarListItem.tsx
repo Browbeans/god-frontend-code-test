@@ -18,7 +18,7 @@ interface CarListItemProps {
 
 export const CarListItem: FC<CarListItemProps> = ({ car }) => (
     <div className="carContainer">
-        <Text variant={"hillary"}>{car.bodyType}</Text>
+        <Text variant={"hillary"}>{car.bodyType.toUpperCase()}</Text>
         <Flex
             extend={{
                 flexDirection: "row",

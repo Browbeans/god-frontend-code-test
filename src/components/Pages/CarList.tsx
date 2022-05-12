@@ -4,6 +4,7 @@ import { getAllCars } from "../api/carApi";
 import { CarBodyTypeEnum, CarModel } from "../types/types";
 import { CarListItem } from "./Components/CarListItem";
 import { DotList } from "./Components/DotList";
+import { Paginator } from "./Components/Paginator";
 
 const STARTING_PAGE = 1;
 const PAGE_SIZE = 4;
@@ -27,6 +28,7 @@ export const CarList: FC = () => {
             handleDottedListClick(0);
         }
         if (carBodyType !== CarBodyTypeEnum.ALL) {
+            setCurrentPage(STARTING_PAGE);
             setAllCars(filteredCars);
             handleDottedListClick(0);
             return;
@@ -108,36 +110,12 @@ export const CarList: FC = () => {
                       ))}
             </Flex>
             {allCars.length > PAGE_SIZE && isDesktopSize && (
-                <div className="paginatorContainer">
-                    <button
-                        onClick={() => setCurrentPage(currentPage - 1)}
-                        disabled={currentPage === STARTING_PAGE}
-                        className={"iconButton"}
-                    >
-                        <Icon
-                            color={
-                                currentPage === STARTING_PAGE
-                                    ? "secondary"
-                                    : "primary"
-                            }
-                            type="media-previous-48"
-                        />
-                    </button>
-                    <button
-                        onClick={() => setCurrentPage(currentPage + 1)}
-                        disabled={currentPage === lastPage}
-                        className={"iconButton"}
-                    >
-                        <Icon
-                            color={
-                                currentPage === lastPage
-                                    ? "secondary"
-                                    : "primary"
-                            }
-                            type={"media-next-48"}
-                        />
-                    </button>
-                </div>
+                <Paginator
+                    startPage={STARTING_PAGE}
+                    setCurrentPage={(page) => setCurrentPage(page)}
+                    currentPage={currentPage}
+                    lastPage={lastPage}
+                />
             )}
             {!isDesktopSize && (
                 <DotList
