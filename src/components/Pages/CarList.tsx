@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useEffect, useRef, useState } from "react";
 import {
     Card,
     CardContent,
@@ -13,6 +13,7 @@ import {
 import { getAllCars } from "../api/carApi";
 import { CarBodyTypeEnum, CarModel } from "../types/types";
 import { CarListItem } from "./Components/CarListItem";
+import { DotList } from "./Components/DotList";
 
 const STARTING_PAGE = 1;
 const PAGE_SIZE = 4;
@@ -25,6 +26,7 @@ export const CarList: FC = () => {
     );
     const [currentPage, setCurrentPage] = useState(STARTING_PAGE);
     const [lastPage, setLastPage] = useState<number>(0);
+    const [currentDot, setCurrentDot] = useState(0);
 
     const getCars = async () => {
         const cars = await getAllCars();
@@ -32,11 +34,30 @@ export const CarList: FC = () => {
         const filteredCars = cars.filter((car) => car.bodyType === carBodyType);
         if (carBodyType === CarBodyTypeEnum.ALL) {
             setAllCars(cars);
+            handleDottedListClick(0);
         }
         if (carBodyType !== CarBodyTypeEnum.ALL) {
             setAllCars(filteredCars);
+            handleDottedListClick(0);
             return;
         }
+    };
+
+    const carSectionReference = useRef<HTMLDivElement>(null);
+
+    const handleDottedListClick = (currentDot: number) => {
+        setCurrentDot(currentDot);
+        const containerWidth = carSectionReference.current?.offsetWidth;
+        carSectionReference.current?.scrollTo(
+            (containerWidth! * 0.73 * currentDot)!,
+            0
+        );
+    };
+
+    const handleScroll = (event: React.UIEvent<HTMLDivElement, UIEvent>) => {
+        const currentPosition = event.currentTarget.scrollLeft;
+        const containerWidth = carSectionReference.current?.offsetWidth;
+        setCurrentDot(Math.round(currentPosition / (containerWidth! * 0.73)));
     };
 
     useEffect(() => {
@@ -76,7 +97,14 @@ export const CarList: FC = () => {
                     padding: "1rem",
                     boxSizing: "border-box",
                     overflowX: "scroll",
+                    msOverflowStyle: "none",
+                    scrollbarWidth: "none",
+                    ["::-webkit-scrollbar"]: {
+                        display: "none",
+                    },
                 }}
+                ref={carSectionReference}
+                onScroll={(event) => handleScroll(event)}
             >
                 {isDesktopSize
                     ? allCars
@@ -118,6 +146,13 @@ export const CarList: FC = () => {
                         />
                     </button>
                 </div>
+            )}
+            {!isDesktopSize && (
+                <DotList
+                    onClick={(index: number) => handleDottedListClick(index)}
+                    initialDot={currentDot}
+                    totalDots={allCars.length}
+                />
             )}
         </div>
     );
